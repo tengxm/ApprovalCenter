@@ -1,0 +1,19 @@
+{
+  "name": "approvalcenter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tengxm/ApprovalCenter.git"
+  },
+  "author": "tengxm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tengxm/ApprovalCenter/issues"
+  },
+  "homepage": "https://github.com/tengxm/ApprovalCenter#readme"
+}
