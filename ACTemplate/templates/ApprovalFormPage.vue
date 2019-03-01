@@ -493,12 +493,6 @@
                 type: Object,
                 required: false
             },
-            //是否进行表单验证
-            FormValidation:{
-                type:Boolean,
-                required: true,
-                default:false
-            }
         },
         mounted(){
             var _this = this;
@@ -625,7 +619,6 @@
                         _this.basicFormInfo.Folio = res.data.Folio;
                         _this.basicFormInfo.OriginatorOrgs = res.data.OriginatorOrgs;
                         if(_this.isProcessing==0) {
-                            debugger
                             if (localStorage.getItem("AC_DefaultOrg") != null) {
                                 var DefaultOrg = JSON.parse(localStorage.getItem("AC_DefaultOrg"))[_this.basicFormInfo.OriginatorID];
                                 $.each(_this.basicFormInfo.OriginatorOrgs, function (i, item) {
@@ -729,6 +722,7 @@
 //            },
             //其他操作
             btnOperation: function (action) {
+                this.$emit('getApprovalBtn', action);
                 $("#resonsuccess").modal("show");
                 $("#ModalTitle").text(action);
                 $("#OperationVal").val(action);
@@ -779,15 +773,6 @@
                         })
                     }
                 } else {
-                    if(_this.FormValidation){
-                        $("#form").bootstrapValidator();
-                        var Datas = $("#form").data("bootstrapValidator");
-                        Datas.validate();
-                        var bool = Datas.isValid();
-                        if (bool == false) {
-                            return false;
-                        }
-                    }
                     sid = 'ExecuteAction';
                     postData = {
                         "action": JSON.stringify({

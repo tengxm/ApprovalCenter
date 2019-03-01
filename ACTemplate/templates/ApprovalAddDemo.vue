@@ -1,6 +1,6 @@
 <template>
     <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData" :FormValidation="FormValidation"
-                        @getProcessInstance="getProcessInstance" @getActData="getActData" @getProcData="getProcData">
+                        @getProcessInstance="getProcessInstance" @getActData="getActData" @getProcData="getProcData" @getApprovalBtn="getApprovalBtn">
         <!--业务表单-->
         <div slot="FormContent">
             <h5 class="row-title before-color">
@@ -23,7 +23,7 @@
                 procData:{},
                 actData:{},
                 procInstance:{},
-                FormValidation:false
+                ApprovalBtn:''
             }
         },
         mounted(){
@@ -59,6 +59,10 @@
             //获取流程自定义数据
             getProcData:function (val) {
                 this.procData=val;
+            },
+            //获取审批时点击的按钮名称
+            getApprovalBtn:function(val){
+                this.ApprovalBtn=val;
             },
         }
     }
