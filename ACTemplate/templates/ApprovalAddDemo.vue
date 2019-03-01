@@ -1,5 +1,5 @@
 <template>
-    <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData"
+    <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData" :FormValidation="FormValidation"
                         @getProcessInstance="getProcessInstance" @getActData="getActData" @getProcData="getProcData">
         <!--业务表单-->
         <div slot="FormContent">
@@ -23,6 +23,7 @@
                 procData:{},
                 actData:{},
                 procInstance:{},
+                FormValidation:false
             }
         },
         mounted(){

@@ -97,10 +97,10 @@
                                     <label class="col-sm-4 control-label ">*所在部门</label>
                                     <div class="col-sm-8">
                                         <div class="input-group helper-group">
-                                            <input type="text" class="form-control input-sm" name="Organization" id="Organization" v-model="basicFormInfo.OriginatorOrgName"
-                                                   data-bv-notempty="true" data-bv-notempty-message="请选择所在部门" disabled/>
-                                            <input type="hidden" class="form-control input-sm" name="OrganizationId" id="OrganizationId" v-model="basicFormInfo.OriginatorOrgID"
+                                            <input type="hidden" class="form-control input-sm" name="OrganizationId" id="OrganizationId"
                                                    data-bv-notempty="true" data-bv-notempty-message="请选择所在部门"/>
+                                            <input type="text" class="form-control input-sm" name="Organization" id="Organization"
+                                                   data-bv-notempty="true" data-bv-notempty-message="请选择所在部门" disabled/>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default shiny btn-sm" @click.prevent="OrganizationModal" type="button">
                                                     <i class=" fa fa-ellipsis-h"></i>
@@ -417,9 +417,15 @@
         #ApprovalDetailPage{
            margin:10px 10px 0;
         }
+
     }
     body{
         overflow: unset !important;
+    }
+    @media screen and (max-width: 500px) {
+        #resonsuccess{
+            top:25% !important;
+        }
     }
 </style>
 <script>
@@ -455,7 +461,7 @@
                 "isDisabled": false,
                 "UserID": '',
                 "UserName": '',
-                "SearchType": ''
+                "SearchType": '',
             }
         },
         components: {
@@ -481,12 +487,17 @@
             procName: {
                 type: String,
                 required: true
-            }
-            ,
+            },
             //用户绑定
             userHelp: {
                 type: Object,
                 required: false
+            },
+            //是否进行表单验证
+            FormValidation:{
+                type:Boolean,
+                required: true,
+                default:false
             }
         },
         mounted(){
@@ -562,17 +573,26 @@
             this.$nextTick(function () {
                 //$("#ApprovalOriginator").val(_this.procInstance.Originator);
                 this.IsDefaultFunc();
+                if (this.pageType != '0') {
+                    $("#form").find("input").prop("disabled", "disabled");
+                    $("#form").find("textarea").prop("disabled", "disabled");
+                    $("#form").find("select").prop("disabled", "disabled");
+                    $("#form").find("button").prop("disabled", "disabled");
+                    $("#form").find(".fa-calendar").parent("span").off("click");
+                }
+                $("#OrganizationId").val(this.basicFormInfo.OriginatorOrgID);
+                $("#Organization").val(this.basicFormInfo.OriginatorOrgName);
             })
         },
-        updated(){
-            if (this.pageType != '0') {
-                $("#form").find("input").prop("disabled", "disabled");
-                $("#form").find("textarea").prop("disabled", "disabled");
-                $("#form").find("select").prop("disabled", "disabled");
-                $("#form").find("button").prop("disabled", "disabled");
-                $("#form").find(".fa-calendar").parent("span").off("click");
-            }
-        },
+//        updated(){
+//            if (this.pageType != '0') {
+//                $("#form").find("input").prop("disabled", "disabled");
+//                $("#form").find("textarea").prop("disabled", "disabled");
+//                $("#form").find("select").prop("disabled", "disabled");
+//                $("#form").find("button").prop("disabled", "disabled");
+//                $("#form").find(".fa-calendar").parent("span").off("click");
+//            }
+//        },
         methods: {
             getOrganization(){
 
@@ -605,6 +625,7 @@
                         _this.basicFormInfo.Folio = res.data.Folio;
                         _this.basicFormInfo.OriginatorOrgs = res.data.OriginatorOrgs;
                         if(_this.isProcessing==0) {
+                            debugger
                             if (localStorage.getItem("AC_DefaultOrg") != null) {
                                 var DefaultOrg = JSON.parse(localStorage.getItem("AC_DefaultOrg"))[_this.basicFormInfo.OriginatorID];
                                 $.each(_this.basicFormInfo.OriginatorOrgs, function (i, item) {
@@ -758,6 +779,15 @@
                         })
                     }
                 } else {
+                    if(_this.FormValidation){
+                        $("#form").bootstrapValidator();
+                        var Datas = $("#form").data("bootstrapValidator");
+                        Datas.validate();
+                        var bool = Datas.isValid();
+                        if (bool == false) {
+                            return false;
+                        }
+                    }
                     sid = 'ExecuteAction';
                     postData = {
                         "action": JSON.stringify({

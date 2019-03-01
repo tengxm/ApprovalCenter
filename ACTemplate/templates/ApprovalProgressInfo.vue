@@ -10,10 +10,10 @@
                         <i class="fa fa-map-marker" style="margin-right: 5px;color: #6666FF"></i>当前节点
                     </li>
                     <li>
-                        <div style="display: inline-block;border: 1px solid #71C2F9;width: 22px;margin:0 5px 3px 0;"></div>已审批
+                        <div style="display: inline-block;border-bottom: 2px solid #71C2F9;width: 22px;margin:0 5px 3px 0;"></div>已审批
                     </li>
                     <li style="border-right: 1px solid #ddd;padding-right: 22px">
-                        <div style="display: inline-block;border: 1px dashed #71C2F9;width: 22px;margin:0 5px 3px 0;"></div>未审批
+                        <div style="display: inline-block;border-bottom: 2px dashed #71C2F9;width: 22px;margin:0 5px 3px 0;"></div>未审批
                     </li>
                     <li>
                         <i class="fa fa-plus-circle" style="margin-right: 5px;color: #33CC99"></i>发起
@@ -325,25 +325,25 @@
     }
     #ApprovalProgress .ProgressLineFront{
         display: inline-block;
-        border: 1px solid #71C2F9;
+        border-bottom: 2px solid #71C2F9;
         width: 44px;
         position: absolute;
         top: 76px;
         left: 0px;
     }
     #ApprovalProgress .ProgressLineFront.active{
-        border: 1px dashed #71C2F9;
+        border-bottom: 2px dashed #71C2F9;
     }
     #ApprovalProgress .ProgressLineBack{
         display: inline-block;
-        border: 1px solid #71C2F9;
+        border-bottom: 2px solid #71C2F9;
         width: 44px;
         position: absolute;
         top: 76px;
         left: 108px;
     }
     #ApprovalProgress .ProgressLineBack.active{
-        border: 1px dashed #71C2F9;
+        border-bottom: 2px dashed #71C2F9;
     }
     #ApprovalProgress .NodeIcon{
         opacity: 0;
