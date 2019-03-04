@@ -139,7 +139,7 @@
             </div>
         </div>
         <!--无权限展示页面-->
-        <div style="text-align: center;margin: 50px auto 0; color:#00a7cb;" v-show="!isShowForm">
+        <div style="text-align: center;margin: 50px auto 0; color:#00a7cb;" v-show="!isShowForm" id="NoPrivilege">
             <h1><i class="fa fa-times-circle"></i></h1>
             <h1 style="font-weight:bold">抱歉！您没有权限访问该审批工作！</h1>
         </div>
@@ -561,6 +561,7 @@
                     } else {
                         _this.isShowForm = false;
                         _this.pageType = 4;
+                        $("#NoPrivilege").html('')
                         NotifyError(res.errmsg);
                     }
                 });
