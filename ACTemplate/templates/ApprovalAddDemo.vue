@@ -63,6 +63,7 @@
             //获取审批时点击的按钮名称
             getApprovalBtn:function(val){
                 this.ApprovalBtn=val;
+                $("#ApprovalOpinionModal").modal("show");
             },
         }
     }

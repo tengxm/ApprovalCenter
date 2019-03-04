@@ -204,7 +204,7 @@
             </div>
         </template>
         <!--审批意见模态框-->
-        <div class="modal fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" id="resonsuccess"
+        <div class="modal fade in" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" id="ApprovalOpinionModal"
              data-backdrop="static">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -423,7 +423,7 @@
         overflow: unset !important;
     }
     @media screen and (max-width: 500px) {
-        #resonsuccess{
+        #ApprovalOpinionModal{
             top:25% !important;
         }
     }
@@ -492,6 +492,12 @@
             userHelp: {
                 type: Object,
                 required: false
+            },
+            //审批时是否需要表单验证
+            FormValidation:{
+                type: Boolean,
+                required: true,
+                default:false
             },
         },
         mounted(){
@@ -722,8 +728,11 @@
 //            },
             //其他操作
             btnOperation: function (action) {
-                this.$emit('getApprovalBtn', action);
-                $("#resonsuccess").modal("show");
+                if(this.FormValidation){
+                    this.$emit('getApprovalBtn', action);
+                }else{
+                    $("#ApprovalOpinionModal").modal("show");
+                }
                 $("#ModalTitle").text(action);
                 $("#OperationVal").val(action);
                 if (action == "转交") {
