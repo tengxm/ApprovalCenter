@@ -1,6 +1,6 @@
 <template>
-    <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData" :FormValidation="FormValidation"
-                        @getProcessInstance="getProcessInstance" @getActData="getActData" @getProcData="getProcData" @getApprovalBtn="getApprovalBtn">
+    <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData"
+                        @getProcessInstance="getProcessInstance" @getActData="getActData" @getProcData="getProcData" @validateForm="validateForm">
         <!--业务表单-->
         <div slot="FormContent">
             <h5 class="row-title before-color">
@@ -60,10 +60,16 @@
             getProcData:function (val) {
                 this.procData=val;
             },
-            //获取审批时点击的按钮名称
-            getApprovalBtn:function(val){
+            //审批时点击按钮进行表单验证的方法
+            validateForm:function(val){
                 this.ApprovalBtn=val;
-                $("#ApprovalOpinionModal").modal("show");
+                if(this.ApprovalBtn=='同意'){
+                    $("#form").bootstrapValidator();
+                    var Datas = $("#form").data("bootstrapValidator");
+                    Datas.validate();
+                    var bool = Datas.isValid();
+                    callback(bool);
+                }
             },
         }
     }

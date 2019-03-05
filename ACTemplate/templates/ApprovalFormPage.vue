@@ -493,12 +493,6 @@
                 type: Object,
                 required: false
             },
-            //审批时是否需要表单验证
-            FormValidation:{
-                type: Boolean,
-                required: true,
-                default:false
-            },
         },
         mounted(){
             var _this = this;
@@ -729,11 +723,14 @@
 //            },
             //其他操作
             btnOperation: function (action) {
-                if(this.FormValidation){
-                    this.$emit('getApprovalBtn', action);
-                }else{
-                    $("#ApprovalOpinionModal").modal("show");
+                var result=true;
+                this.$emit('validateForm', action,function(str){
+                    result=str;
+                });
+                if(!result){
+                    return;
                 }
+                $("#ApprovalOpinionModal").modal("show");
                 $("#ModalTitle").text(action);
                 $("#OperationVal").val(action);
                 if (action == "转交") {
