@@ -5,12 +5,12 @@
         <template v-if="pageType==1 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销')">
+                    <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销')" :disabled="isDisabled">
                         <i class="fa fa-reply"></i>撤销
                     </button>
                 </div>
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="催办" type="button" class="btn btn-default" v-on:click="btnOperation('催办')">
+                    <button title="催办" type="button" class="btn btn-default" v-on:click="btnOperation('催办')" :disabled="isDisabled">
                         <i class="fa fa-bell"></i>催办
                     </button>
                 </div>
@@ -20,13 +20,13 @@
         <template v-else-if="pageType==2 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="通过" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')">
+                    <button title="通过" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')" :disabled="isDisabled">
                         <i class="fa fa-exchange"></i>转交
                     </button>
                 </div>
                 <template v-for="item in btns">
                     <div class="widget-buttons buttons-bordered" style="border:none;" v-show="isShowButton">
-                        <button type="button" class="btn btn-default" @click="btnOperation(item)">
+                        <button type="button" class="btn btn-default" @click="btnOperation(item)" :disabled="isDisabled">
                             {{item}}
                         </button>
                     </div>
@@ -149,12 +149,12 @@
         <template v-if="pageType==1 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销')">
+                    <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销')" :disabled="isDisabled">
                         <i class="fa fa-reply"></i>撤销
                     </button>
                 </div>
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="催办" type="button" class="btn btn-default" v-on:click="btnOperation('催办')">
+                    <button title="催办" type="button" class="btn btn-default" v-on:click="btnOperation('催办')" :disabled="isDisabled">
                         <i class="fa fa-bell"></i>催办
                     </button>
                 </div>
@@ -164,13 +164,13 @@
         <template v-else-if="pageType==2 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')">
+                    <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')" :disabled="isDisabled">
                         <i class="fa fa-exchange"></i>转交
                     </button>
                 </div>
                 <template v-for="item in btns">
                     <div class="widget-buttons buttons-bordered" style="border:none;" v-show="isShowButton">
-                        <button type="button" class="btn btn-default" @click="btnOperation(item)">
+                        <button type="button" class="btn btn-default" @click="btnOperation(item)" :disabled="isDisabled">
                             {{item}}
                         </button>
                     </div>
@@ -422,11 +422,11 @@
     body{
         overflow: unset !important;
     }
-    @media screen and (max-width: 500px) {
-        #ApprovalOpinionModal{
-            top:25% !important;
-        }
-    }
+    /*@media screen and (max-width: 500px) {*/
+        /*#ApprovalOpinionModal.footer{*/
+            /*top:60% !important;*/
+        /*}*/
+    /*}*/
 </style>
 <script>
     import ApprovalProgressInfo from './ApprovalProgressInfo.vue'
@@ -577,6 +577,7 @@
                 }
                 $("#OrganizationId").val(this.basicFormInfo.OriginatorOrgID);
                 $("#Organization").val(this.basicFormInfo.OriginatorOrgName);
+                $("#Organization").attr("title",this.basicFormInfo.OriginatorOrgName);
             })
         },
 //        updated(){
@@ -730,6 +731,7 @@
                 if(!result){
                     return;
                 }
+                this.isDisabled = true;
                 $("#ApprovalOpinionModal").modal("show");
                 $("#ModalTitle").text(action);
                 $("#OperationVal").val(action);
@@ -798,6 +800,7 @@
                 getDataAsync(url, "post", postData, function (res) {
                     if (res.state > 0) {
                         NotifySuccess("执行成功");
+                        _this.isDisabled = false;
                         $("#Opinion").val('')
                         if (window.location.href.lastIndexOf(("SN")) == -1) {
                             if( action != "催办") {
@@ -814,13 +817,15 @@
                         }
                     } else {
                         NotifyError(res.errmsg);
+                        _this.isDisabled = false;
                         $("#Opinion").val('');
-                        this.UserID = '';
-                        this.UserName = '';
+                        _this.UserID = '';
+                        _this.UserName = '';
                     }
                 });
             },
             btnClose: function () {
+                this.isDisabled = false;
                 $("#Opinion").val('');
                 this.UserID = '';
                 this.UserName = '';
@@ -876,6 +881,7 @@
                 localStorage.setItem("AC_DefaultOrg", JSON.stringify(DefaultOrg));
                 $("#OrganizationId").val(OrganizationId);
                 $("#Organization").val(OrganizationName);
+                $("#Organization").attr("title",OrganizationName);
             },
             trClick: function () {
                 var $trs = $("#organizationdatatable tbody tr");
