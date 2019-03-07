@@ -31,7 +31,7 @@
                         <i class="fa fa-minus-circle" style="margin-right: 5px;color: #33CC99"></i>终节点
                     </li>
                     <li>
-                        <i class="fa fa-minus-circle" style="margin-right: 5px;color: #FF3333"></i>异常终止节点
+                        <i class="fa fa-minus-circle" style="margin-right: 5px;color: #FF3333"></i>撤销终止节点
                     </li>
 
                 </ul>

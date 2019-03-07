@@ -628,6 +628,8 @@
                                         _this.basicFormInfo.OriginatorOrgs[i].IsDefault = 1;
                                         _this.basicFormInfo.OriginatorOrgID = item.ID;
                                         _this.basicFormInfo.OriginatorOrgName = item.Name;
+                                        $("#OrganizationId").val(_this.basicFormInfo.OriginatorOrgID);
+                                        $("#Organization").val(_this.basicFormInfo.OriginatorOrgName);
                                     } else {
                                         _this.basicFormInfo.OriginatorOrgs[i].IsDefault = 0;
                                     }
@@ -641,6 +643,8 @@
                             if(_this.basicFormInfo.OriginatorOrgs.length==1) {
                                 _this.basicFormInfo.OriginatorOrgID = _this.basicFormInfo.OriginatorOrgs[0].ID;
                                 _this.basicFormInfo.OriginatorOrgName = _this.basicFormInfo.OriginatorOrgs[0].Name;
+                                $("#OrganizationId").val(_this.basicFormInfo.OriginatorOrgID);
+                                $("#Organization").val(_this.basicFormInfo.OriginatorOrgName);
                             }
                         }
                         _this.procInstance.Subject = res.data.Subject;
@@ -673,7 +677,7 @@
                 var postData = {
                     "newTask": JSON.stringify({
                         "Subject":  _this.basicFormInfo.Subject,
-                        "OriginatorOrg": _this.basicFormInfo.OriginatorOrgID,
+                        "OriginatorOrg": $("#OrganizationId").val(),
                         "ProcName": this.procName,
                         "ProcDataFields": this.procData,
                         "ActDataFields": this.actData,
@@ -732,6 +736,18 @@
                     return;
                 }
                 this.isDisabled = true;
+                $('#ApprovalOpinionModal').on('shown.bs.modal', function () {
+//                    debugger
+                    var $this = $(this);
+                    var dialog = $this.find('.modal-dialog');
+
+                    //此种方式，在使用动画第一次显示时有问题
+                    //解决方案，去掉动画fade样式
+                    var top = ($(window).height() - dialog.height()) / 2;
+                    dialog.css({
+                        marginTop:top
+                    });
+                });
                 $("#ApprovalOpinionModal").modal("show");
                 $("#ModalTitle").text(action);
                 $("#OperationVal").val(action);
