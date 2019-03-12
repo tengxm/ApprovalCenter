@@ -149,12 +149,12 @@
         <template v-if="pageType==1 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销')" :disabled="isDisabled">
+                    <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销','footerBtn')" :disabled="isDisabled">
                         <i class="fa fa-reply"></i>撤销
                     </button>
                 </div>
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="催办" type="button" class="btn btn-default" v-on:click="btnOperation('催办')" :disabled="isDisabled">
+                    <button title="催办" type="button" class="btn btn-default" v-on:click="btnOperation('催办','footerBtn')" :disabled="isDisabled">
                         <i class="fa fa-bell"></i>催办
                     </button>
                 </div>
@@ -164,13 +164,13 @@
         <template v-else-if="pageType==2 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')" :disabled="isDisabled">
+                    <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交','footerBtn')" :disabled="isDisabled">
                         <i class="fa fa-exchange"></i>转交
                     </button>
                 </div>
                 <template v-for="item in btns">
                     <div class="widget-buttons buttons-bordered" style="border:none;" v-show="isShowButton">
-                        <button type="button" class="btn btn-default" @click="btnOperation(item)" :disabled="isDisabled">
+                        <button type="button" class="btn btn-default" @click="btnOperation(item,'footerBtn')" :disabled="isDisabled">
                             {{item}}
                         </button>
                     </div>
@@ -237,8 +237,7 @@
                                 </div>
                                 <div class="col-lg-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
-                                            <textarea class="form-control" name="Opinion" id="Opinion" rows="4"></textarea>
-
+                                        <textarea class="form-control" name="Opinion" id="Opinion" rows="4"></textarea>
                                     </div>
                                 </div>
                             </form>
@@ -422,11 +421,6 @@
     body{
         overflow: unset !important;
     }
-    /*@media screen and (max-width: 500px) {*/
-        /*#ApprovalOpinionModal.footer{*/
-            /*top:60% !important;*/
-        /*}*/
-    /*}*/
 </style>
 <script>
     import ApprovalProgressInfo from './ApprovalProgressInfo.vue'
@@ -727,7 +721,7 @@
 //                });
 //            },
             //其他操作
-            btnOperation: function (action) {
+            btnOperation: function (action,loc) {
                 var result=true;
                 this.$emit('validateForm', action,function(str){
                     result=str;
@@ -736,20 +730,17 @@
                     return;
                 }
                 this.isDisabled = true;
-                $('#ApprovalOpinionModal').on('shown.bs.modal', function () {
-//                    debugger
-                    var $this = $(this);
-                    var dialog = $this.find('.modal-dialog');
-
-                    //此种方式，在使用动画第一次显示时有问题
-                    //解决方案，去掉动画fade样式
-                    var top = ($(window).height() - dialog.height()) / 2;
-                    dialog.css({
-                        marginTop:top
-                    });
-                });
                 $("#ApprovalOpinionModal").modal("show");
                 $("#ModalTitle").text(action);
+                    if(loc=="footerBtn"){
+                        var u = navigator.userAgent;
+                        var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+                        if (isIOS) {
+                            $("#ApprovalOpinionModal").css({"bottom":"90px","top":"unset"})
+                        }
+                    }else{
+                        $("#ApprovalOpinionModal").css({"bottom":"0","top":"0"})
+                    }
                 $("#OperationVal").val(action);
                 if (action == "转交") {
                     $("#TransferInput").show();

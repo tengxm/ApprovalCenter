@@ -44,33 +44,6 @@
                             </template>
                             <template v-else>
                                 <div class="ProcNode">
-                                <!--前半段进度线-->
-                                <template v-if="item.Status==4">
-                                    <div class="ProgressLineFront"></div>
-                                </template>
-                                <template v-else-if="item.Status==2">
-                                    <div class="ProgressLineFront active"></div>
-                                </template>
-                                <template v-else>
-                                    <div class="ProgressLineFront"></div>
-                                </template>
-                                <!--后半段进度线-->
-                                <template v-if="index+1<AllDatas.length">
-                                    <template v-if="ProcStatus=='4'">
-                                        <div class="ProgressLineBack"></div>
-                                    </template>
-                                    <template v-else>
-                                        <template v-if="AllDatas[index+1].Status==4">
-                                            <div class="ProgressLineBack"></div>
-                                        </template>
-                                        <template v-else-if="AllDatas[index+1].Status==2">
-                                            <div class="ProgressLineBack active"></div>
-                                        </template>
-                                        <template v-else>
-                                            <div class="ProgressLineBack"></div>
-                                        </template>
-                                    </template>
-                                </template>
                                 <!--当前节点或终止节点图标-->
                                 <template v-if="item.Status==2">
                                     <div class="NodeIcon active">
@@ -86,8 +59,38 @@
                                 <div class="NodeName" style="font-size: 12px;">
                                     {{item.ActivityName}}
                                 </div>
-                                <!--头像-->
-                                <img :src="item.Avatar" width="60" height="60" style="border-radius: 100%;margin: 5px 0;"/>
+                                    <!--头像-->
+                                    <!--前半段进度线-->
+                                    <template v-if="item.Status==4">
+                                        <div class="ProgressLineFront"></div>
+                                    </template>
+                                    <template v-else-if="item.Status==2">
+                                        <div class="ProgressLineFront active"></div>
+                                    </template>
+                                    <template v-else>
+                                        <div class="ProgressLineFront"></div>
+                                    </template>
+                                    <img :src="item.Avatar" width="61" height="61" style="border-radius: 100%;margin: 5px 0;"/>
+                                    <!--后半段进度线-->
+                                    <template v-if="index+1<AllDatas.length">
+                                        <template v-if="ProcStatus=='4'">
+                                            <div class="ProgressLineBack"></div>
+                                        </template>
+                                        <template v-else>
+                                            <template v-if="AllDatas[index+1].Status==4">
+                                                <div class="ProgressLineBack"></div>
+                                            </template>
+                                            <template v-else-if="AllDatas[index+1].Status==2">
+                                                <div class="ProgressLineBack active"></div>
+                                            </template>
+                                            <template v-else>
+                                                <div class="ProgressLineBack"></div>
+                                            </template>
+                                        </template>
+                                    </template>
+                                    <template v-else>
+                                        <div class="ProgressLineBack" style="opacity: 0"></div>
+                                    </template>
                                 <!--审批状态图标-->
                                 <template v-if="item.Status==4">
                                     <div class="StateIcon">
@@ -119,15 +122,15 @@
 
                                 </template>
                                 <!--用户名-->
-                                <p>{{item.Destination}}</p>
+                                <p style="width: 156px;">{{item.Destination}}</p>
                                 <!--时间-->
-                                <p style="font-size: 12px;">{{item.CreateTime}}</p>
+                                <p style="font-size: 12px;width: 156px;">{{item.CreateTime}}</p>
                                 <!--审批状态-->
                                 <template v-if="item.Status==4">
-                                    <p>{{item.ActionName}}<i class="fa fa-file-text" title="点击查看" style="margin-left: 5px;cursor: pointer;"@click="ViewDetail(item.ID)"></i></p>
+                                    <p>{{item.ActionName}}<i class="fa fa-file-text" title="点击查看" style="margin-left: 5px;cursor: pointer;"@click="ViewDetail(item.ID,index)"></i></p>
                                 </template>
                                 <template v-else-if="item.Status==2">
-                                    <p>待审批<i class="fa fa-file-text" title="点击查看" style="margin-left: 5px;cursor: pointer;"@click="ViewDetail(item.ID)"></i></p>
+                                    <p>待审批<i class="fa fa-file-text" title="点击查看" style="margin-left: 5px;cursor: pointer;"@click="ViewDetail(item.ID,index)"></i></p>
                                 </template>
                                 <template v-else>
                                     <p>{{item.ActionName}}</p>
@@ -138,30 +141,37 @@
                         <!--是终节点-->
                         <template v-else>
                             <div class="ProcNode">
-                            <!--进度线-->
-                            <div class="ProgressLineFront" style="width: 60px;"></div>
-                            <div class="NodeIcon">
-                                <i class="fa fa-map-marker" style="font-size:18px;color: #6666FF;"></i>
-                            </div>
-                            <!--审批节点名称-->
-                            <div class="NodeName" style="font-size: 12px;margin-top: 14px;">
-                                {{item.ActivityName}}
-                            </div>
-                            <!--终止节点图标-->
-                            <template v-if="item.ActionName=='撤销'">
-                                <div class="StateIcon" style="margin-top: 8px;">
-                                    <i class="fa fa-minus-circle" style="color: #FF3333;font-size: 30px"></i>
+                                <div class="NodeIcon">
+                                    <i class="fa fa-map-marker" style="font-size:18px;color: #6666FF;"></i>
                                 </div>
-                            </template>
-                            <template v-else-if="item.ActionName=='完成'">
-                                <div class="StateIcon" style="margin-top: 8px;">
-                                    <i class="fa fa-minus-circle" style="color: #33CC99;font-size: 30px"></i>
+                                <!--审批节点名称-->
+                                <div class="NodeName" style="font-size: 12px;margin-top: 14px;">
+                                    {{item.ActivityName}}
                                 </div>
-                            </template>
-                            <!--时间-->
-                            <p style="font-size: 12px;">{{item.CreateTime}}</p>
-                            <!--审批状态-->
-                            <p>{{item.ActionName}}</p>
+                                <!--进度线-->
+                                <!--<div class="ProgressLineFront" style="width: 60px; display: inline-block"></div>-->
+                                <!--终止节点图标-->
+                                <div style="overflow: hidden">
+                                    <template v-if="item.ActionName=='撤销'">
+                                        <div class="FinalLine"></div>
+                                        <div class="StateIcon" style="float: left;margin-top:8px;margin-left: 5px;">
+                                            <i class="fa fa-minus-circle" style="color: #FF3333;font-size: 30px"></i>
+                                        </div>
+                                        <div class="FinalLine" style="opacity: 0;"></div>
+                                    </template>
+                                    <template v-else-if="item.ActionName=='完成'">
+                                        <div class="FinalLine"></div>
+                                        <div class="StateIcon" style="float: left;margin-top:8px;margin-left: 5px;">
+                                            <i class="fa fa-minus-circle" style="color: #33CC99;font-size: 30px"></i>
+                                        </div>
+                                        <div class="FinalLine" style="opacity: 0;"></div>
+                                    </template>
+                                </div>
+
+                                <!--时间-->
+                                <p style="font-size: 12px;width: 155px;">{{item.CreateTime}}</p>
+                                <!--审批状态-->
+                                <p>{{item.ActionName}}</p>
                             </div>
                         </template>
 
@@ -305,21 +315,12 @@
         position: relative;
         overflow: hidden;
     }
-    #ApprovalProgress li .ProcNode{
-        padding:5px 16px;
-    }
     #ApprovalProgress li .ProcNode.active{
         padding:5px 0;
     }
-    /*#ApprovalProgress li:first-child{*/
-        /*padding-left: 0px;*/
-    /*}*/
     #ApprovalProgress li:first-child  .ProgressLineFront{
-        display: none;
+        opacity:0;
     }
-    /*#ApprovalProgress li:first-child  .ProgressLineBack{*/
-        /*left:92px;*/
-    /*}*/
     #ApprovalProgress li p{
         margin-bottom: 0px;
     }
@@ -327,9 +328,6 @@
         display: inline-block;
         border-bottom: 2px solid #71C2F9;
         width: 44px;
-        position: absolute;
-        top: 76px;
-        left: 0px;
     }
     #ApprovalProgress .ProgressLineFront.active{
         border-bottom: 2px dashed #71C2F9;
@@ -338,9 +336,6 @@
         display: inline-block;
         border-bottom: 2px solid #71C2F9;
         width: 44px;
-        position: absolute;
-        top: 76px;
-        left: 108px;
     }
     #ApprovalProgress .ProgressLineBack.active{
         border-bottom: 2px dashed #71C2F9;
@@ -351,18 +346,11 @@
     #ApprovalProgress .NodeIcon.active{
         opacity: 1;
     }
-    @media screen and (max-width: 500px) {
-        #DetailModal .modal-content{
-            margin: 50% auto;
-        }
-        #ApprovalProgress .ProgressLineFront{
-            width: 44px;
-            left: -3px;
-        }
-        #ApprovalProgress .ProgressLineBack{
-            width: 47px;
-            left: 105px;
-        }
+    .FinalLine{
+        border-bottom: 2px solid #71C2F9;
+        width: 60px;
+        float: left;
+        margin-top:23px;
     }
     @media screen and (max-width: 407px) {
         #DetailModal .ApprovalComment{
@@ -378,7 +366,7 @@
                 "isShow":false,
                 "AllDatas":[],
                 "NodeLogs":[],
-                "ProcStatus":''
+                "ProcStatus":'',
             }
         },
         props: {
@@ -405,7 +393,6 @@
                     $("#ApprovalInfo").slideDown();
                     this.isShow=true;
                 }
-
                 $("#ApprovalInfo").show();
             },
             LoadData:function () {
@@ -427,8 +414,15 @@
                 }
 
             },
-            ViewDetail:function (ID) {
+            ViewDetail:function (ID,index) {
                 $("#DetailModal").modal("show");
+                var u = navigator.userAgent;
+                var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+                if (isIOS) {
+                    var top=index*230+'px';
+//                    $("#DetailModal").css({"top":top,"bottom":"unset"})
+                    $("#DetailModal .modal-content").css({"margin-top":top})
+                }
                 var dataUrl = ServiceHost + "/api/invoke?SID=ACSrv-GetWorkflowNodeLogs";
                 let _this = this;
                 getDataAsync(dataUrl, "Get", {"workTaskId":ID}, function (result) {
