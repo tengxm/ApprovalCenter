@@ -456,6 +456,7 @@
                 "UserID": '',
                 "UserName": '',
                 "SearchType": '',
+                'myApprovableProcessInstanceIdList':[]
             }
         },
         components: {
@@ -499,6 +500,11 @@
                         "SerialNo": _this.serialNo,
                     })
                 };
+                getDataAsync(ServiceHost + "/api/invoke?SID=ACSrv-GetMyApprovableProcessInstanceIdList","get",{}, function (res) {
+                    if (res.state > 0) {
+                        _this.myApprovableProcessInstanceIdList =  res.data;
+                    }
+                });
             }
             else if (_this.$route.query.PIID) {
                 _this.processInstanceId = _this.$route.query.PIID;
@@ -574,15 +580,6 @@
                 $("#Organization").attr("title",this.basicFormInfo.OriginatorOrgName);
             })
         },
-//        updated(){
-//            if (this.pageType != '0') {
-//                $("#form").find("input").prop("disabled", "disabled");
-//                $("#form").find("textarea").prop("disabled", "disabled");
-//                $("#form").find("select").prop("disabled", "disabled");
-//                $("#form").find("button").prop("disabled", "disabled");
-//                $("#form").find(".fa-calendar").parent("span").off("click");
-//            }
-//        },
         methods: {
             getOrganization(){
 
@@ -806,21 +803,64 @@
                 var url = ServiceHost + "/api/invoke?SID=ACSrv-" + sid;
                 getDataAsync(url, "post", postData, function (res) {
                     if (res.state > 0) {
-                        NotifySuccess("执行成功");
                         _this.isDisabled = false;
                         $("#Opinion").val('')
                         if (window.location.href.lastIndexOf(("SN")) == -1) {
+                            NotifySuccess("已"+action);
                             if( action != "催办") {
-                                window.history.go(0);
+                                window.setTimeout(function(){
+                                    window.history.go(0);
+                                },1000);
                             }
                         }
                         else {
+                            if( action == "催办" ) {
+                                NotifySuccess("已"+action);
+                                return;
+                            }
+                            if( action =="撤销"){
+                                NotifySuccess("已"+action);
+                                window.setTimeout(function(){
+                                    window.history.go(0);
+                                },1000);
+                                return;
+                            }
+                            for(var i = 0; i < _this.myApprovableProcessInstanceIdList.length ;i++){
+                                if(_this.myApprovableProcessInstanceIdList[i] == _this.procInstance.ID){
+                                    _this.myApprovableProcessInstanceIdList.splice(i,1);
+                                    break;
+                                }
+                            }
+                            var total = _this.myApprovableProcessInstanceIdList.length;
+                            debugger;
+                            if (total>0) {
+                                NotifySuccess("已" + action + "，进入下一条，还有" + total + "条");
+                                var dataUrl = ServiceHost + "/api/invoke?SID=ACSrv-GetTaskFormUrl&processInstanceId='" + _this.myApprovableProcessInstanceIdList[0] + "'";
+                                getDataAsync(dataUrl, "Get", null, function (result) {
+                                    if (result.state > 0) {
+                                        var formUrl = result.data;
+                                        if (formUrl && formUrl != '') {
+                                            formUrl = _this.getFormUrl(formUrl);
+                                            window.setTimeout(function(){
+                                                window.location.href = formUrl;
+                                            },1500);
+                                        } else {
+                                            NotifyError("未获取到审批表单地址");
+                                        }
+                                    } else {
+                                        NotifyError(result.errmsg);
+                                    }
+                                });
+                                return;
+                            }else{
+                                NotifySuccess("已"+action+"，全部审批已处理完成");
+                            }
                             var formUrl = window.location.href;
                             formUrl = formUrl.substring(0, formUrl.lastIndexOf("SN")) + "PIID=" + _this.processInstanceId;
-                            var url = new URL(formUrl);
-                            var randomParam = (url.search == '' ? '?n=' : '&n=') + Math.random();
-                            formUrl = url.origin + url.search + randomParam + "/" + url.hash + "&NoAuth=true";
-                            window.location.href = formUrl;
+                            formUrl = _this.getFormUrl(formUrl);
+                            window.setTimeout(function(){
+                                window.location.href = formUrl;
+                            },1500);
                         }
                     } else {
                         NotifyError(res.errmsg);
@@ -836,6 +876,12 @@
                 $("#Opinion").val('');
                 this.UserID = '';
                 this.UserName = '';
+            },
+            getFormUrl:function(formUrl){
+                var url = new URL(formUrl);
+                var randomParam = (url.search == '' ? '?n=' : '&n=') + Math.random();
+                formUrl = url.origin + url.search + randomParam + "/" + url.hash + "&NoAuth=true";
+                return  formUrl;
             },
             //所属组织
             OrganizationModal: function () {
