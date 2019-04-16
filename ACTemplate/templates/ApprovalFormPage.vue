@@ -100,7 +100,7 @@
                                             <input type="hidden" class="form-control input-sm" name="OrganizationId" id="OrganizationId"
                                                    data-bv-notempty="true" data-bv-notempty-message="请选择所在部门"/>
                                             <input type="text" class="form-control input-sm" name="Organization" id="Organization"
-                                                   data-bv-notempty="true" data-bv-notempty-message="请选择所在部门" disabled/>
+                                                   data-bv-notempty="true" data-bv-notempty-message="请选择所在部门" readonly/>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default shiny btn-sm" @click.prevent="OrganizationModal" type="button">
                                                     <i class=" fa fa-ellipsis-h"></i>
@@ -259,7 +259,7 @@
                         <button type="button" class="bootbox-close-button close"
                                 data-dismiss="modal" aria-hidden="true">×
                         </button>
-                        <h6 class="modal-title">所属组织</h6>
+                        <h6 class="modal-title">所属部门</h6>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
