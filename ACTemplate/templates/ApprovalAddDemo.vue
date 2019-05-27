@@ -49,10 +49,6 @@
                     }
                 });
             }
-            //表单发起多个实例（可自行设置发起实例的数量）
-            // for(var i=0;i<2;i++){
-            //     this.multiProcData.push(this.procData);
-            // }
             this.$nextTick(function () {});
         },
         components: {
@@ -82,6 +78,13 @@
                     callback(bool);
                 }
             },
+            //添加多实例，注：该方法由业务自己定义，自己调用，与框架无关，实例数据自己组织并加入到this.multiProcData数组中即可。
+            addProcData:function(receiver){
+                var data = {};
+                copyObject2Object(data,this.procData);
+                data.Receiver =receiver;
+                this.multiProcData.push(data);
+            }
         }
     }
 </script>
