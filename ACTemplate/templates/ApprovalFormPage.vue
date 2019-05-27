@@ -4,7 +4,7 @@
         <!--我发起的审批-->
         <template v-if="pageType==1 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
-                <div class="widget-buttons buttons-bordered " style="border:none;">
+                <div class="widget-buttons buttons-bordered" style="border:none;">
                     <button title="撤销" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('撤销')" :disabled="isDisabled">
                         <i class="fa fa-reply"></i>撤销
                     </button>
@@ -48,10 +48,12 @@
                     </button>
                 </div>
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="提交审批" type="button" class="btn btn-default" v-on:click="btnSubmit" :disabled="isDisabled">
-                        <i class="fa fa-arrow-up"></i>提交审批
+                    <button title="提交" type="button" class="btn btn-default" v-on:click="btnSubmit" :disabled="isDisabled">
+                        <i class="fa fa-arrow-up"></i>提交
                     </button>
                 </div>
+                <!--业务自定义按钮区-->
+                <slot name="BusiButton"></slot>
                 <!--<div class="widget-buttons buttons-bordered " style="border:none;">-->
                     <!--<button title="保存" type="button" class="btn btn-default btn-primary" v-on:click="btnSave">-->
                         <!--<i class="fa  fa-save"></i>保存草稿-->
@@ -192,10 +194,12 @@
                     </button>
                 </div>
                 <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="提交审批" type="button" class="btn btn-default" v-on:click="btnSubmit" :disabled="isDisabled">
-                        <i class="fa fa-arrow-up"></i>提交审批
+                    <button title="提交" type="button" class="btn btn-default" v-on:click="btnSubmit" :disabled="isDisabled">
+                        <i class="fa fa-arrow-up"></i>提交
                     </button>
                 </div>
+                <!--业务自定义按钮区-->
+                <slot name="BusiButton"></slot>
                 <!--<div class="widget-buttons buttons-bordered " style="border:none;">-->
                     <!--<button title="保存" type="button" class="btn btn-default" v-on:click="btnSave">-->
                         <!--<i class="fa  fa-save"></i>保存草稿-->
@@ -307,11 +311,6 @@
                                             </template>
                                         </td>
                                     </tr>
-                                    <!--<tr>-->
-                                        <!--<td class="text-center Name_col" title="" style="width: 60px; height: 35px;"-->
-                                            <!--colspan="3">无记录-->
-                                        <!--</td>-->
-                                    <!--</tr>-->
                                     </tbody>
                                 </table>
                             </div>
@@ -437,6 +436,7 @@
                 "isShowPresetButton": false,
                 "procInstance": {
                     "ID": "",
+                    "WorkTaskID": "",
                     "Subject": "",
                     "Originator": "",
                     "OriginatorOrg": "",
@@ -456,7 +456,7 @@
                 "UserID": '',
                 "UserName": '',
                 "SearchType": '',
-                'myApprovableProcessInstanceIdList':[]
+                'myApprovableWorkTaskIdList':[]
             }
         },
         components: {
@@ -476,6 +476,11 @@
             //业务自定义数据
             busiData: {
                 type: Object,
+                required: true
+            },
+            //业务发起多个实例
+            multiProcData: {
+                type: Array,
                 required: true
             },
             //流程名称
@@ -500,9 +505,9 @@
                         "SerialNo": _this.serialNo,
                     })
                 };
-                getDataAsync(ServiceHost + "/api/invoke?SID=ACSrv-GetMyApprovableProcessInstanceIdList","get",{}, function (res) {
+                getDataAsync(ServiceHost + "/api/invoke?SID=ACSrv-GetMyApprovableWorkTaskIdList","get",{}, function (res) {
                     if (res.state > 0) {
-                        _this.myApprovableProcessInstanceIdList =  res.data;
+                        _this.myApprovableWorkTaskIdList =  res.data;
                     }
                 });
             }
@@ -523,6 +528,7 @@
                         var workTask = res.data;
                         _this.loadProcessForm(workTask.ProcessInstanceID);
                         _this.procInstance.ID = workTask.ProcessInstanceID;
+                        _this.procInstance.WorkTaskID = workTask.WorkTaskID;
                         _this.procInstance.Subject = workTask.Subject;
                         _this.procInstance.Originator = workTask.Originator;
                         _this.procInstance.ActivityName = workTask.ActivityName;
@@ -530,7 +536,7 @@
                         _this.$emit('getActData', workTask.ActDataFields);
                         _this.$emit('getProcData', workTask.ProcDataFields);
                         _this.pageType = workTask.OperatorType;
-                        if (!_this.serialNo) {
+                        if (_this.serialNo != workTask.SerialNo) {
                             _this.serialNo = workTask.SerialNo;
                         }
                         if (!_this.processInstanceId) {
@@ -569,11 +575,14 @@
                 //$("#ApprovalOriginator").val(_this.procInstance.Originator);
                 this.IsDefaultFunc();
                 if (this.pageType != '0') {
+                    // debugger
                     $("#form").find("input").prop("disabled", "disabled");
                     $("#form").find("textarea").prop("disabled", "disabled");
                     $("#form").find("select").prop("disabled", "disabled");
                     $("#form").find("button").prop("disabled", "disabled");
-                    $("#form").find(".fa-calendar").parent("span").off("click");
+                    setTimeout(function () {
+                        $("#form").find(".fa-calendar").parent("span").off("click");
+                    },200);
                 }
                 $("#OrganizationId").val(this.basicFormInfo.OriginatorOrgID);
                 $("#Organization").val(this.basicFormInfo.OriginatorOrgName);
@@ -650,7 +659,7 @@
             back: function () {
                 this.$router.go(-1);
             },
-            //提交审批
+            //提交
             btnSubmit: function () {
                 $("#form").bootstrapValidator();
                 var Datas = $("#form").data("bootstrapValidator");
@@ -671,8 +680,8 @@
                         "OriginatorOrg": $("#OrganizationId").val(),
                         "ProcName": this.procName,
                         "ProcDataFields": this.procData,
-                        "ActDataFields": this.actData,
                         "BusiDataFields": this.busiData,
+                        "MultiProcDataFields": this.multiProcData,
                         "Comment": $("#Opinion").val()
                     })
                 };
@@ -773,7 +782,7 @@
                     sid = 'CancelProcess';
                     postData = {
                         "process": JSON.stringify({
-                            "SerialNo": _this.serialNo,
+                            "ProcessInstanceID": _this.procInstance.ID,
                             "Comment": opinion
                         })
                     }
@@ -781,7 +790,7 @@
                     sid = 'RemindersAction';
                     postData = {
                         "remider": JSON.stringify({
-                            "SerialNo": _this.serialNo,
+                            "ProcessInstanceID": _this.procInstance.ID,
                             "Comment": opinion
                         })
                     }
@@ -825,17 +834,16 @@
                                 },1000);
                                 return;
                             }
-                            for(var i = 0; i < _this.myApprovableProcessInstanceIdList.length ;i++){
-                                if(_this.myApprovableProcessInstanceIdList[i] == _this.procInstance.ID){
-                                    _this.myApprovableProcessInstanceIdList.splice(i,1);
+                            for(var i = 0; i < _this.myApprovableWorkTaskIdList.length ;i++){
+                                if(_this.myApprovableWorkTaskIdList[i] == _this.procInstance.WorkTaskID){
+                                    _this.myApprovableWorkTaskIdList.splice(i,1);
                                     break;
                                 }
                             }
-                            var total = _this.myApprovableProcessInstanceIdList.length;
-                            debugger;
+                            var total = _this.myApprovableWorkTaskIdList.length;
                             if (total>0) {
-                                NotifySuccess("已" + action + "，进入下一条，还有" + total + "条");
-                                var dataUrl = ServiceHost + "/api/invoke?SID=ACSrv-GetTaskFormUrl&processInstanceId='" + _this.myApprovableProcessInstanceIdList[0] + "'";
+                                NotifySuccess("已" + action + "，将自动跳转到下一条，还有" + total + "条");
+                                var dataUrl = ServiceHost + "/api/invoke?SID=ACSrv-GetTaskFormUrlByID&id='" + _this.myApprovableWorkTaskIdList[0] + "'";
                                 getDataAsync(dataUrl, "Get", null, function (result) {
                                     if (result.state > 0) {
                                         var formUrl = result.data;
@@ -955,14 +963,20 @@
                 $('#CopyUserModal').modal('show');
                 var keywords = ($('#copykeywords').val());
 
-                var userdatatabledata = $("#copyuserdatatable").data('bs.datagrid17');
-                if (userdatatabledata) {
-                    userdatatabledata.clearData();
-                }
+                // var userdatatabledata = $("#copyuserdatatable").data('bs.datagrid17');
+                // if (userdatatabledata) {
+                //     userdatatabledata.clearData();
+                // }
 
                 if (keywords != '' || this.SearchType != '') {
                     this.SearchType = '';
                     $('#copykeywords').val('');
+                    var userdatatabledata = $("#copyuserdatatable").data('bs.datagrid17');
+                    if (userdatatabledata) {
+                        window.setTimeout(function () {
+                            userdatatabledata.clearData()
+                        }, 200)
+                    }
                 } else {
                     if (this.userHelp && (this.userHelp.OrganizationID || this.userHelp.RoleID)) {
                         this.btnsearch();

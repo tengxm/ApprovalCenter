@@ -1,6 +1,12 @@
 <template>
-    <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData"
+    <ApprovalDetailPage :busiData="busiData" :procName="procName" :procData="procData" :actData="actData" :multiProcData="multiProcData" :userHelp="userHelp"
                         @getProcessInstance="getProcessInstance" @getActData="getActData" @getProcData="getProcData" @validateForm="validateForm">
+        <!--自定义按钮区（发起审批页面）-->
+        <div slot="BusiButton" class="widget-buttons buttons-bordered " style="border:none;">
+            <button title="自定义" type="button" class="btn btn-default">
+                <i class="fa fa-arrow-up"></i>自定义
+            </button>
+        </div>
         <!--业务表单-->
         <div slot="FormContent">
             <h5 class="row-title before-color">
@@ -22,6 +28,7 @@
                 busiData:{},
                 procData:{},
                 actData:{},
+                multiProcData:[],
                 procInstance:{},
                 ApprovalBtn:''
             }
@@ -42,6 +49,10 @@
                     }
                 });
             }
+            //表单发起多个实例（可自行设置发起实例的数量）
+            // for(var i=0;i<2;i++){
+            //     this.multiProcData.push(this.procData);
+            // }
             this.$nextTick(function () {});
         },
         components: {
