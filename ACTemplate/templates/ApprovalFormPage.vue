@@ -19,11 +19,25 @@
         <!--待我审批的-->
         <template v-else-if="pageType==2 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
-                <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="通过" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')" :disabled="isDisabled">
-                        <i class="fa fa-exchange"></i>转交
-                    </button>
-                </div>
+                <template v-if="isShowBack">
+                    <div class="widget-buttons buttons-bordered " style="border:none;">
+                        <button title="返回" type="button" class="btn btn-primary" v-on:click="btnBackList" :disabled="isDisabled">
+                            <i class="fa fa-reply"></i>返回
+                        </button>
+                    </div>
+                    <div class="widget-buttons buttons-bordered " style="border:none;">
+                        <button title="转交" type="button" class="btn btn-default" v-on:click="btnOperation('转交')" :disabled="isDisabled">
+                            <i class="fa fa-exchange"></i>转交
+                        </button>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="widget-buttons buttons-bordered " style="border:none;">
+                        <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')" :disabled="isDisabled">
+                            <i class="fa fa-exchange"></i>转交
+                        </button>
+                    </div>
+                </template>
                 <template v-for="item in btns">
                     <div class="widget-buttons buttons-bordered" style="border:none;" v-show="isShowButton">
                         <button type="button" class="btn btn-default" @click="btnOperation(item)" :disabled="isDisabled">
@@ -35,6 +49,13 @@
         </template>
         <!--我已审批的-->
         <template v-else-if="pageType==3">
+            <div class="well widget-body" style="text-align:left;" name="ButtonGroup" v-if="isShowBack">
+                <div class="widget-buttons buttons-bordered " style="border:none;">
+                    <button title="返回" type="button" class="btn btn-primary" v-on:click="btnBackList" :disabled="isDisabled">
+                        <i class="fa fa-reply"></i>返回
+                    </button>
+                </div>
+            </div>
         </template>
         <!--无权限查看审批页面-->
         <template v-else-if="pageType==4">
@@ -66,7 +87,7 @@
             <template v-if="pageType==4">
             </template>
             <template v-else>
-                <ApprovalProgressInfo :ProgressId="procInstance.ID"></ApprovalProgressInfo>
+                <ApprovalProgressInfo :ProgressId="procInstance.ID" ref="refs"></ApprovalProgressInfo>
             </template>
         </template>
 
@@ -165,11 +186,25 @@
         <!--待我审批的-->
         <template v-else-if="pageType==2 && isShowPresetButton">
             <div class="well widget-body" style="text-align:left;" name="ButtonGroup">
-                <div class="widget-buttons buttons-bordered " style="border:none;">
-                    <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交','footerBtn')" :disabled="isDisabled">
-                        <i class="fa fa-exchange"></i>转交
-                    </button>
-                </div>
+                <template v-if="isShowBack">
+                    <div class="widget-buttons buttons-bordered " style="border:none;">
+                        <button title="返回" type="button" class="btn btn-primary" v-on:click="btnBackList" :disabled="isDisabled">
+                            <i class="fa fa-reply"></i>返回
+                        </button>
+                    </div>
+                    <div class="widget-buttons buttons-bordered " style="border:none;">
+                        <button title="转交" type="button" class="btn btn-default" v-on:click="btnOperation('转交')" :disabled="isDisabled">
+                            <i class="fa fa-exchange"></i>转交
+                        </button>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="widget-buttons buttons-bordered " style="border:none;">
+                        <button title="转交" type="button" class="btn btn-default btn-primary" v-on:click="btnOperation('转交')" :disabled="isDisabled">
+                            <i class="fa fa-exchange"></i>转交
+                        </button>
+                    </div>
+                </template>
                 <template v-for="item in btns">
                     <div class="widget-buttons buttons-bordered" style="border:none;" v-show="isShowButton">
                         <button type="button" class="btn btn-default" @click="btnOperation(item,'footerBtn')" :disabled="isDisabled">
@@ -181,6 +216,13 @@
         </template>
         <!--我已审批的-->
         <template v-else-if="pageType==3">
+            <div class="well widget-body" style="text-align:left;" name="ButtonGroup" v-if="isShowBack">
+                <div class="widget-buttons buttons-bordered " style="border:none;">
+                    <button title="返回" type="button" class="btn btn-primary" v-on:click="btnBackList" :disabled="isDisabled">
+                        <i class="fa fa-reply"></i>返回
+                    </button>
+                </div>
+            </div>
         </template>
         <!--无权限查看审批页面-->
         <template v-else-if="pageType==4">
@@ -248,7 +290,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button id="btnSuccess" type="button" class="btn btn-primary" data-dismiss="modal" @click="btnConfirm">确定</button>
+                        <button id="btnSuccess" type="button" class="btn btn-primary" @click="btnConfirm">确定</button>
                         <button type="button" class="btn" data-dismiss="modal" @click="btnClose">关闭</button>
                     </div>
                 </div>
@@ -422,11 +464,25 @@
     }
 </style>
 <script>
+    window.workflow={
+        "procInstance":{
+            "ID":"",
+            "WorkTaskID":"",
+            "Subject":"",
+            "Originator":"",
+            "OriginatorOrg":"",
+            "ActivityName":""
+        },
+
+        "procData":{},
+        "actData":{},
+        "execute":function(activity){}
+    }
     import ApprovalProgressInfo from './ApprovalProgressInfo.vue'
     export default{
         data(){
             return {
-                "pageType": 0,
+                "pageType": 0,//0:发起审批,1:我发起的,2:待我审批的,3:我已审批的,4:无权限
                 "isShowForm": true,
                 "btns": [],
                 "isShowButton": false,
@@ -456,7 +512,9 @@
                 "UserID": '',
                 "UserName": '',
                 "SearchType": '',
-                'myApprovableWorkTaskIdList':[]
+                'myApprovableWorkTaskIdList':[],
+                "isShowBack":false,
+                "isSubmit":false
             }
         },
         components: {
@@ -498,6 +556,7 @@
             var _this = this;
             var postData = {};
             if (_this.$route.query.SN) {
+                _this.isShowBack=true;
                 _this.serialNo = _this.$route.query.SN;
                 _this.isProcessing = 1;
                 postData = {
@@ -512,6 +571,7 @@
                 });
             }
             else if (_this.$route.query.PIID) {
+                _this.isShowBack=false;
                 _this.processInstanceId = _this.$route.query.PIID;
                 _this.isProcessing = 1;
                 postData = {
@@ -558,6 +618,8 @@
                         } else {
                             _this.isShowButton = false;
                         }
+                        window.workflow.actData=workTask.ActDataFields;
+                        window.workflow.procData=workTask.ProcDataFields;
                     } else {
                         _this.isShowForm = false;
                         _this.pageType = 4;
@@ -570,7 +632,6 @@
             else {
                 _this.loadProcessForm();
             }
-
             this.$nextTick(function () {
                 //$("#ApprovalOriginator").val(_this.procInstance.Originator);
                 this.IsDefaultFunc();
@@ -590,9 +651,58 @@
             })
         },
         methods: {
-            getOrganization(){
-
+            init:function(){
+                var _this=this;
+                var postData = {};
+                if (_this.$route.query.SN) {
+                    _this.isShowBack=true;
+                    _this.serialNo = _this.$route.query.SN;
+                    _this.isProcessing = 1;
+                    postData = {
+                        "filter": JSON.stringify({
+                            "SerialNo": _this.serialNo,
+                        })
+                    };
+                    getDataAsync(ServiceHost + "/api/invoke?SID=ACSrv-GetMyApprovableWorkTaskIdList","get",{}, function (res) {
+                        if (res.state > 0) {
+                            _this.myApprovableWorkTaskIdList =  res.data;
+                        }
+                    });
+                }
+                else if (_this.$route.query.PIID) {
+                    _this.isShowBack=false;
+                    _this.processInstanceId = _this.$route.query.PIID;
+                    _this.isProcessing = 1;
+                    postData = {
+                        "filter": JSON.stringify({
+                            "ProcessInstanceID": _this.processInstanceId,
+                        })
+                    };
+                }
+                //已发起
+                var url = ServiceHost + "/api/invoke?SID=ACSrv-GetTaskItem";
+                getDataSync(url, "post", postData, function (res) {
+                    if (res.state > 0) {
+                        var workTask = res.data;
+                        _this.pageType = workTask.OperatorType;
+                        if (workTask.ProcStatus == '2') {
+                            _this.isShowPresetButton = true;
+                        }
+                        if (workTask.ProcStatus == '3' || workTask.ProcStatus == '4') {
+                            _this.isShowPresetButton = false;
+                        }
+                        if (workTask.Actions && workTask.Actions.length > 0) {
+                            _this.btns = workTask.Actions;
+                            _this.isShowButton = true;
+                        } else {
+                            _this.isShowButton = false;
+                        }
+                    } else {
+                        NotifyError(res.errmsg);
+                    }
+                });
             },
+
             //加载基本信息
             loadProcessForm: function (PIID) {
                 var _this = this;
@@ -650,6 +760,7 @@
                         _this.procInstance.Subject = res.data.Subject;
                         _this.procInstance.Originator = res.data.OriginatorID;
                         _this.procInstance.OriginatorOrg = _this.basicFormInfo.OriginatorOrgID;
+                        window.workflow.procInstance=_this.procInstance;
                     } else {
                         NotifyError(res.errmsg);
                     }
@@ -657,7 +768,17 @@
             },
             //返回
             back: function () {
-                this.$router.go(-1);
+                var _this = this;
+                if(this.isSubmit){
+                    _this.$router.go(-1);
+                }else{
+                    bootbox.setDefaults("locale", "zh_CN");
+                    bootbox.confirm("尚未提交保存，确定要退出吗？", function (ok) {
+                        if(ok){
+                            _this.$router.go(-1);
+                        }
+                    })
+                }
             },
             //提交
             btnSubmit: function () {
@@ -689,11 +810,13 @@
                 getDataAsync(url, "post", postData, function (res) {
                     if (res.state > 0) {
                         NotifySuccess("提交成功");
+                        _this.isSubmit=true;
                         _this.back();
 
                     } else {
                         NotifyError(res.errmsg);
                         _this.isDisabled = false;
+                        _this.isSubmit=false;
                     }
                 });
 
@@ -770,6 +893,11 @@
                 var sid = '';
                 var postData = {};
                 if (action == "转交") {
+                    if(!_this.UserID){
+                        this.isDisabled = false;
+                        NotifyWarning("请选择转交人");
+                        return;
+                    }
                     sid = 'RedirectAction';
                     postData = {
                         "destination": JSON.stringify({
@@ -813,13 +941,37 @@
                 getDataAsync(url, "post", postData, function (res) {
                     if (res.state > 0) {
                         _this.isDisabled = false;
-                        $("#Opinion").val('')
+                        $("#Opinion").val('');
                         if (window.location.href.lastIndexOf(("SN")) == -1) {
-                            NotifySuccess("已"+action);
+                            // NotifySuccess("已"+action);
                             if( action != "催办") {
                                 window.setTimeout(function(){
-                                    window.history.go(0);
+                                    // window.history.go(0);
+                                    _this.init();
+                                    _this.$refs.refs.LoadData();
+                                    _this.$nextTick(function () {
+                                        if (_this.pageType != '0') {
+                                            // debugger
+                                            $("#form").find("input").prop("disabled", "disabled");
+                                            $("#form").find("textarea").prop("disabled", "disabled");
+                                            $("#form").find("select").prop("disabled", "disabled");
+                                            $("#form").find("button").prop("disabled", "disabled");
+                                            $(".input-group-addon").parent().removeClass("input-group");
+                                            $(".input-group-addon").remove();
+                                        }
+                                        $("#OrganizationId").val(_this.basicFormInfo.OriginatorOrgID);
+                                        $("#Organization").val(_this.basicFormInfo.OriginatorOrgName);
+                                        $("#Organization").attr("title",_this.basicFormInfo.OriginatorOrgName);
+                                    })
+                                    var activity={
+                                        "ActivityName":_this.procInstance.ActivityName,
+                                        "ActionName":action
+                                    }
+                                    window.workflow.execute(activity);
+                                    NotifySuccess("已"+action);
                                 },1000);
+                            }else{
+                                NotifySuccess("已"+action);
                             }
                         }
                         else {
@@ -828,9 +980,30 @@
                                 return;
                             }
                             if( action =="撤销"){
-                                NotifySuccess("已"+action);
                                 window.setTimeout(function(){
-                                    window.history.go(0);
+                                    // window.history.go(0);
+                                    _this.init();
+                                    _this.$refs.refs.LoadData();
+                                    _this.$nextTick(function () {
+                                        if (_this.pageType != '0') {
+                                            // debugger
+                                            $("#form").find("input").prop("disabled", "disabled");
+                                            $("#form").find("textarea").prop("disabled", "disabled");
+                                            $("#form").find("select").prop("disabled", "disabled");
+                                            $("#form").find("button").prop("disabled", "disabled");
+                                            $(".input-group-addon").parent().removeClass("input-group");
+                                            $(".input-group-addon").remove();
+                                        }
+                                        $("#OrganizationId").val(_this.basicFormInfo.OriginatorOrgID);
+                                        $("#Organization").val(_this.basicFormInfo.OriginatorOrgName);
+                                        $("#Organization").attr("title",_this.basicFormInfo.OriginatorOrgName);
+                                    })
+                                    var activity={
+                                        "ActivityName":_this.procInstance.ActivityName,
+                                        "ActionName":action
+                                    }
+                                    window.workflow.execute(activity);
+                                    NotifySuccess("已"+action);
                                 },1000);
                                 return;
                             }
@@ -841,6 +1014,12 @@
                                 }
                             }
                             var total = _this.myApprovableWorkTaskIdList.length;
+                            var activity={
+                                "ActivityName":_this.procInstance.ActivityName,
+                                "ActionName":action
+                            }
+                            window.workflow.execute(activity);
+                            NotifySuccess("已"+action);
                             if (total>0) {
                                 NotifySuccess("已" + action + "，将自动跳转到下一条，还有" + total + "条");
                                 var dataUrl = ServiceHost + "/api/invoke?SID=ACSrv-GetTaskFormUrlByID&id='" + _this.myApprovableWorkTaskIdList[0] + "'";
@@ -871,12 +1050,20 @@
                             },1500);
                         }
                     } else {
-                        NotifyError(res.errmsg);
-                        _this.isDisabled = false;
-                        $("#Opinion").val('');
-                        _this.UserID = '';
-                        _this.UserName = '';
+                        if(res.errcode=='BIZ-AC-1047') {
+                            NotifyWarning(res.errmsg);
+                            window.setTimeout(function () {
+                                window.history.go(0);
+                            }, 1000);
+                        }else {
+                            NotifyError(res.errmsg);
+                            _this.isDisabled = false;
+                            $("#Opinion").val('');
+                            _this.UserID = '';
+                            _this.UserName = '';
+                        }
                     }
+                    $("#ApprovalOpinionModal").modal('hide');
                 });
             },
             btnClose: function () {
@@ -1064,6 +1251,10 @@
                         this.UserName = null;
                     }
                 }
+            },
+            btnBackList:function () {
+                var domain = document.domain;
+                window.location.href='//'+domain+'?r='+Math.random()+'/#/ac/WaitMyApproval/List?mid=c66d0175-7b2f-4aaa-a03b-56d306a17771';
             }
         }
     }
